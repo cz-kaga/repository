@@ -1,17 +1,42 @@
 package db;
 
-import com.mysql.cj.jdbc.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.ResultSet;
 import locale.Locale;
 
 public static class MysqlClient extends Client {
-	private static MysqlClient _Session;
 
-	public MysqlClient() {
-		_Session = new MysqlClient();
+	private static Connection conn = null;
+
+	public static MysqlClient() {
+		try {
+			// The newInstance() call is a work around for some
+			// broken Java implementations
+
+			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+		} catch (Exception ex) {
+			// handle the error
+		}
 
 	}
 
-	public MysqlClient Connect() {
-		return _Session;
+	public static  MysqlClient Connect() {
+		try {
+			conn =
+			   DriverManager.getConnection("jdbc:mysql://" + getServerAddr() + "?"
+										   + "user=" + getUserAccount() + "&password=" + super._Passwd);
+			
+			// Do something with the Connection
+		
+		   ...
+		} catch (SQLException ex) {
+			// handle any errors
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
 	}
 }
