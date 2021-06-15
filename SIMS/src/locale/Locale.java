@@ -11,8 +11,8 @@ import java.util.*;
 public class Locale {
 
 	private static ResourceBundle uiTrans = ResourceBundle.getBundle("locale/ui");
-	private static ResourceBundle clientTrans = ResourceBundle.getBundle("locale/ui");
-
+	private static ResourceBundle clientTrans = ResourceBundle.getBundle("locale/settings");
+b
 	public void setLang(String lang) {
 		// TODO Change Language
 	}
