@@ -42,4 +42,6 @@ public abstract class Client implements User {
 	public String getVersion() {
 		return _Version;
 	}
+
+	protected String getPasswd() {return _Passwd;}
 }

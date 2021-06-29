@@ -7,7 +7,7 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import locale.Locale;
 
-public static class MysqlClient extends Client {
+public  class MysqlClient extends Client {
 
 	private static Connection conn = null;
 
@@ -23,15 +23,15 @@ public static class MysqlClient extends Client {
 
 	}
 
-	public static  MysqlClient Connect() {
+	public  MysqlClient Connect() {
 		try {
 			conn =
 			   DriverManager.getConnection("jdbc:mysql://" + getServerAddr() + "?"
-										   + "user=" + getUserAccount() + "&password=" + super._Passwd);
+										   + "user=" + getUserAccount() + "&password=" + getPasswd());
 			
 			// Do something with the Connection
 		
-		   ...
+
 		} catch (SQLException ex) {
 			// handle any errors
 			System.out.println("SQLException: " + ex.getMessage());
