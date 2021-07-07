@@ -17,18 +17,36 @@ import java.sql.SQLException;
  * 
  */
 public class Client  {
+	private final static Client _instance = new Client();
 	private Connection _conn = null;
 	private Statement _stmt = null;
 	private ResultSet _rs = null;
 	private String _serveraddr = null;
 	private String _uid = null;
 	private String _passwd = null;
-	public Client() {
+	private SQLException _exception = null;
+	private Client() {
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
+			 Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+
 		} catch (Exception ex) {
 				//TODO 启动客户端时驱动注册失败时的行为
+			System.out.println("cnmb");
 		}
+	}
+
+	/**
+	 * 提供错误代码与错误情况的
+	 * @return 错误代码:错误情况
+	 */
+	public String getException(){
+		String revalue =_exception.getErrorCode() + "|" + _exception.getSQLState()+"|"+_exception.getMessage();
+		_exception = _exception.getNextException();
+		return  revalue;
+	}
+
+	public static Client getInstance(){
+		return _instance;
 	}
 
 	/**
@@ -39,18 +57,28 @@ public class Client  {
 	 * @return 成功返回True
 	 */
 	public Boolean Connect(String aServerside, String aUserid, String aPasswd){
-		String serverside = "jdbc:mysql//" + aServerside;
+		String serverside =  aServerside;
+
 		try {
 			_serveraddr = aServerside;
 			_uid = aUserid;
 			_passwd = aPasswd;
-			_conn = DriverManager.getConnection(serverside, aUserid, aPasswd);
 
+				_conn = DriverManager.getConnection(serverside);
+			if(_conn == null) {
+				return Boolean.TRUE;
+			}
+			else
+				return Boolean.FALSE;
 		}
-		catch (Exception ex){
+		catch (SQLException ex){
+			_exception = ex;
 			//TODO 连接失败时的行为
+			return null;
 		}
-		return Boolean.TRUE;
+
+
+
 	}
 
 	/**
@@ -122,4 +150,9 @@ public class Client  {
 		}
 		return  Boolean.TRUE;
 	}
+
+	public String getServeraddr(){
+		return _serveraddr;
+	}
+
 }
