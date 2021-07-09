@@ -1,11 +1,11 @@
-package Model;
+package org.xust.sims.model;
 
 
 import java.util.Date;
 import java.util.List;
 
 //@Data
-public class UserInfo{
+public class UserInfoModel {
     private String _sex;
     private String _college;
     private Date _accessdate;
