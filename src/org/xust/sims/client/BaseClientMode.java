@@ -1,29 +1,37 @@
-package org.xust.sims.base;
+package org.xust.sims.client;
 
+/**
+ * 特权执行类,用与部分需要提权执行的情况
+ * 该类用于未登录查看登录后情况
+ * 或者登录无权限查看有权限数据类
+ * 其实我也不知道这东西拿来干嘛
+ */
 public abstract class BaseClientMode {
-    private final Client Session;
-    private String queryhead = "jdbc:mysql://";
-    private String server = "localhost";
-    private String port = "3306";
-    private String table = "sims";
-    private String account;
-    private String password;
-    private String query;
+    protected final Client session;
+    protected String queryhead = "jdbc:mysql://";
+    protected String server = "localhost";
+    protected String port = "3306";
+    protected String table = "sims";
+    protected String account;
+    protected String password;
+    protected String query;
 
 
 
 
     public BaseClientMode(){
-        Session = Client.getInstance();
+        session = Client.getInstance();
     }
 
     public Boolean login(){
-        return Session.Connect(queryhead+server+":"+port+"/sims?user="+ account +"&password="+ password +"&serverTimezone=Asia/Shanghai&characterEncoding=utf-8", account, password);
+
+        session.Connect(queryhead+server+":"+port+"/sims?user="+ account +"&password="+ password +"&serverTimezone=Asia/Shanghai&characterEncoding=utf-8", account, password);
+        return session.isValid();
     }
 
 
     public Boolean isValid(){
-        return Session.isValid();
+        return session.isValid();
     }
 
     public void setServer(String aserver){

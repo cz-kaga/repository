@@ -1,14 +1,17 @@
 package org.xust.sims.model;
 
-import org.xust.sims.base.Client;
-import org.xust.sims.base.GlobalOptions;
+import org.xust.sims.client.AdminBaseClientMode;
+import org.xust.sims.client.Client;
+import org.xust.kagatools.GlobalOptions;
 
 public class UserModel {
+    private AdminBaseClientMode admin;
     private String uid;
     private String passwd;
     private UserInfoModel info;
     private final Client session = Client.getInstance();
     public UserModel(String auid, String apasswd){
+        admin = new AdminBaseClientMode();
         uid = auid;
         GlobalOptions.USER_ID = uid;
         passwd = apasswd;
@@ -28,8 +31,14 @@ public class UserModel {
     public Boolean Login(String auid, String apasswd){
         GlobalOptions.USER_ID = auid;
         passwd = apasswd;
-        return session.Connect(GlobalOptions.CLIENT_HOST, GlobalOptions.USER_ID,passwd);
+        return admin.userLogin(passwd);
 
+    }
+    public Boolean Register(String auid, String apassword, String ausername){
+        GlobalOptions.USER_ID = auid;
+        passwd = apassword;
+        GlobalOptions.USER_NAME = ausername;
+        return Boolean.TRUE;
     }
 
     public String getError(){

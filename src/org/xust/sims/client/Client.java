@@ -1,4 +1,6 @@
-package org.xust.sims.base;
+package org.xust.sims.client;
+import org.xust.kagatools.GlobalOptions;
+
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,16 +17,20 @@ import java.sql.SQLException;
  */
 public class Client  {
 	private final static Client INSTANCE = new Client();
-	private Connection conn = null;
-	private Statement stmt = null;
-	private ResultSet rs = null;
-	private String serveraddr = null;
-	private String uid = null;
-	private String passwd = null;
-	private SQLException exception = null;
+	private Connection conn;
+	private Statement stmt;
+	private static ResultSet rs;
+	private String serveraddr;
+	private String uid;
+	private String passwd;
+	private SQLException exception;
+	//记得删掉下面这条
+	//TODO Delete Order Below!!!!!
+	private String wholelink = "jdbc:mysql://localhost:3306/sims?user=root&password=XUST2020&serverTimezone=Asia/Shanghai&characterEncoding=utf-8";
 	private Client() {
 		try {
 			 Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+			 serveraddr = GlobalOptions.CLIENT_HOST;
 
 		} catch (Exception ex) {
 				//TODO 启动客户端时驱动注册失败时的行为
@@ -59,6 +65,27 @@ public class Client  {
 			serveraddr = aServerside;
 			uid = aUserid;
 			passwd = aPasswd;
+			conn = DriverManager.getConnection(wholelink);
+			if(conn.isValid(5)) {
+				return Boolean.TRUE;
+			}
+			else
+				return Boolean.FALSE;
+		}
+		catch (SQLException ex){
+			exception = ex;
+			//TODO 连接失败时的行为
+			return null;
+		}
+
+
+
+	}
+
+	public Boolean Connect(String aServerside){
+
+		try {
+
 			conn = DriverManager.getConnection(aServerside);
 			if(conn.isValid(5)) {
 				return Boolean.TRUE;
@@ -109,25 +136,54 @@ public class Client  {
 	}
 
 	/**
-	 * 用于提交SQL解释命令
+	 * 用于提交自定义SQL解释命令
+	 * @param method select或insert
 	 * @param astmt 完整的命令，需要在Model中组装完成，否则会报错
-	 * @return ResultSet类型 为结果集，如果连接失效，返回null
-	 * @deprecated 有细化功能的方法了,这玩意儿进垃圾堆了
+	 * @return 执行成功返回TRUE,否则返回FALSE,如果执行出错,返回null
 	 */
-	public ResultSet SQL(String astmt) {
-		try {
-			if (conn.isValid(10) && Connect(serveraddr, uid, passwd)){
-				stmt = conn.createStatement();
-				rs = stmt.executeQuery(astmt);
-				return rs;
+	public Boolean SQL(String method, String astmt) {
+		switch (method){
+			case "select":
+			{
+				try {
+					if (conn.isValid(10) && Connect(serveraddr, uid, passwd)){
+						stmt = conn.createStatement();
+						System.out.println(astmt);
+
+						rs = stmt.executeQuery(astmt);
+
+						return Boolean.TRUE;
+					}
+					else
+						return Boolean.FALSE;
+				}
+				catch (SQLException ex){
+					//TODO 当设置的时间为负的时候的处理（当然不可能出现）
+					exception=ex;
+					System.out.println(getException());
+					return null;
+				}
 			}
-			else
+			case "insert":	{
+				try {
+					if (conn.isValid(10) && Connect(serveraddr, uid, passwd)){
+						stmt = conn.createStatement();
+						System.out.println(astmt);
+						return stmt.execute(astmt);
+					}
+					else
+						return Boolean.FALSE;
+				}
+				catch (SQLException ex){
+					//TODO 当设置的时间为负的时候的处理（当然不可能出现）
+					exception=ex;
+					System.out.println(getException());
+					return null;
+				}
+			}
+			default:
 				return null;
 		}
-		catch (SQLException NegativeTime){
-			//TODO 当设置的时间为负的时候的处理（当然不可能出现）
-		}
-		return null;
 	}
 
 	/**
@@ -248,12 +304,17 @@ public class Client  {
 	public ResultSet getRs(){
 		return rs;
 	}
-	public Reader getResult(String key){
+
+	public String getFirstResult(){
 		try {
-			System.out.println(rs.getCharacterStream(key));
-			return  rs.getCharacterStream(key);
+			if(rs.next())
+				return  rs.getString(1);
+			else
+				return null;
 		}
 		catch (SQLException ex) {
+			exception = ex;
+			System.out.println("cnm");
 			return null;
 		}
 	}

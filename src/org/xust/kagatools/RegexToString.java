@@ -1,4 +1,4 @@
-package org.xust.sims.kagatools;
+package org.xust.kagatools;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

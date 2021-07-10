@@ -1,4 +1,6 @@
-package org.xust.sims.kagatools;
+package org.xust.kagatools;
+
+import java.sql.SQLException;
 
 /**
  * 自制的 类流 类(手动分句)
@@ -9,15 +11,17 @@ package org.xust.sims.kagatools;
  * @author cz_kaga
  */
 public class JsonNearstream {
-    private static final  JsonNearstream session = new JsonNearstream();
+    private static JsonNearstream session;// = new JsonNearstream();
     private  String content;
     public static JsonNearstream getSession(){
+        session = new JsonNearstream();
         return session;
     }
     private JsonNearstream(){
 
     }
     public JsonNearstream createJson(String key, String value){
+
         content = "{"+ "\"" + key + "\":\"" + value +"\"";
         return  session;
     }
@@ -26,15 +30,21 @@ public class JsonNearstream {
      * 用于添加POST返回数据中的json格式数据
      * @param key 添加数据中的键
      * @param value 键对应的值
-     * @return String格式字符串,格式是
+     * @return 类流
      */
     public  JsonNearstream addJson(String key, String value) {
         content = content +",\"" + key + "\":\"" + value +"\"";
         return session;
     }
 
-    public  String stopJson(){
-        content = content + "}";
-        return content;
+    /**
+     * 这里模拟了流的终结操作
+     * 执行这种终结操作的时候流会被置空
+     * @return 类流的字符串形式
+     */
+    public  String stopJsontoString(){
+        String back = content + "}";
+        //session = null;
+        return back;
     }
 }
